@@ -1,16 +1,15 @@
 import * as axios from "axios";
 import * as nodemailer from "nodemailer";
-// const config = require("../config.js");
+import config from "../config";
 
 /**
  * Send email
  * @param {object} content
  */
-function sendEmail(content) {
+function sendEmail(content: string) {
   if (!content) return;
 
   const account = config && config.email ? config.email.account : "";
-
   const password = config && config.email ? config.email.password : "";
 
   var transporter = nodemailer.createTransport({
@@ -34,7 +33,7 @@ function sendEmail(content) {
   });
 }
 
-function sleep(ms) {
+function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });

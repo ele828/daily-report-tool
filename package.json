@@ -13,5 +13,7 @@
     "gmail-send": "^1.2.14",
     "nodemailer": "^4.6.6"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/nodemailer": "^4.6.2"
+  }
 }
