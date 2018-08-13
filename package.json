@@ -12,5 +12,6 @@
     "axios": "^0.18.0",
     "gmail-send": "^1.2.14",
     "nodemailer": "^4.6.6"
-  }
+  },
+  "devDependencies": {}
 }
