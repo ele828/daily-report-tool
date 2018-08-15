@@ -1,6 +1,6 @@
-import * as axios from "axios";
+import axios from "axios";
 import * as nodemailer from "nodemailer";
-import config from "../config";
+import config from "./config";
 
 /**
  * Send email
@@ -57,11 +57,11 @@ const types = [
   OTHER
 ];
 
-function getPullRequestType(body) {
+function getPullRequestType(body: any) {
   return BREAKING_CHANGE;
 }
 
-function getSubTitle(type) {
+function getSubTitle(type: string) {
   switch (type) {
     case BREAKING_CHANGE:
       return "** :skull_crossbones: Breaking Change **";
@@ -84,7 +84,7 @@ function getSubTitle(type) {
  * Get daily report from pull request.
  * @param {*} pullRequests
  */
-function getDailyReport(pullRequests) {
+function getDailyReport(pullRequests: any) {
   const items = types.map(type => ({ type, commits: [] }));
   for (const [i, pr] of pullRequests.entries()) {
     const { title, number } = pr;

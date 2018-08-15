@@ -14,10 +14,21 @@
     //     "isDefault": true
     //   }
     // }
+
+    // {
+    //   "type": "typescript",
+    //   "tsconfig": "daily-report-tool/tsconfig.json",
+    //   "problemMatcher": ["$tsc"]
+    // }
+
     {
       "type": "typescript",
       "tsconfig": "daily-report-tool/tsconfig.json",
-      "problemMatcher": ["$tsc"]
+      "problemMatcher": ["$tsc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }
