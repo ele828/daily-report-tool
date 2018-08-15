@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "testWithCoverage": "jest --coverage"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +15,9 @@
     "nodemailer": "^4.6.6"
   },
   "devDependencies": {
-    "@types/nodemailer": "^4.6.2"
+    "@types/jest": "^23.3.1",
+    "@types/nodemailer": "^4.6.2",
+    "jest": "^23.5.0",
+    "ts-jest": "^23.1.3"
   }
 }
