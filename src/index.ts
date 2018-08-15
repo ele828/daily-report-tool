@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as nodemailer from "nodemailer";
 import config from "./config";
+import * as Util from "./util";
 
 /**
  * Send email
@@ -21,21 +22,15 @@ function sendEmail(content: string) {
   });
 
   const mailOptions = {
-    from: "integration.sentry@gmail.com",
-    to: "github_pr_daily_reports@ringcentral.glip.com",
-    subject: "Subject of your email",
+    from: config.email.account,
+    to: config.email.to,
+    subject: config.report.subject,
     html: content
   };
 
   transporter.sendMail(mailOptions, function(err, info) {
-    if (err) console.error(err);
+    if (err) console.error("Send mail error: ", err);
     else console.log(info);
-  });
-}
-
-function sleep(ms: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
   });
 }
 
@@ -57,6 +52,7 @@ const types = [
   OTHER
 ];
 
+// TODO: Parse pull request type
 function getPullRequestType(body: any) {
   return BREAKING_CHANGE;
 }
@@ -106,6 +102,7 @@ function getDailyReport(pullRequests: any) {
 }
 
 async function getCommits() {
+  //TODO: add a url composer to handle diffference repo and different time span.
   const resp = await axios.get(
     "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=2018-6-9T00:00:00Z&until=2018-06-14T:00:00Z"
   );
@@ -113,7 +110,7 @@ async function getCommits() {
   for (const data of resp.data) {
     const sha1 = data.sha;
     console.log("sha1:", sha1);
-    await sleep(2000);
+    await Util.sleep(200);
     const prResp = await axios.get(
       `https://api.github.com/search/issues?q=${sha1}`
     );
