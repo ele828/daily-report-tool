@@ -17,7 +17,7 @@
         "NODE_ENV": "development"
       },
       "console": "internalConsole",
-      // "preLaunchTask": "compile",
+      "preLaunchTask": "build",
       "name": "PR CHECKLIST"
     },
     {

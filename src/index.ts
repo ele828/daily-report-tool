@@ -1,38 +1,7 @@
 import axios from "axios";
 import * as nodemailer from "nodemailer";
-import config from "./config";
+import { config } from "./config";
 import * as Util from "./util";
-
-/**
- * Send email
- * @param {object} content
- */
-function sendEmail(content: string) {
-  if (!content) return;
-
-  const account = config && config.email ? config.email.account : "";
-  const password = config && config.email ? config.email.password : "";
-
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: account,
-      pass: password
-    }
-  });
-
-  const mailOptions = {
-    from: config.email.account,
-    to: config.email.to,
-    subject: config.report.subject,
-    html: content
-  };
-
-  transporter.sendMail(mailOptions, function(err, info) {
-    if (err) console.error("Send mail error: ", err);
-    else console.log(info);
-  });
-}
 
 const BREAKING_CHANGE = "breaking_change";
 const NEW_FEATURE = "new_feature";
@@ -77,10 +46,45 @@ function getSubTitle(type: string) {
 }
 
 /**
+ * Send email
+ * @param {object} content
+ */
+function sendEmail(content: string) {
+  if (!content) return;
+
+  const account = config && config.email ? config.email.account : "";
+  const password = config && config.email ? config.email.password : "";
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: account,
+      pass: password
+    }
+  });
+
+  const mailOptions = {
+    from: config.email.account,
+    to: config.email.to,
+    subject: config.report.subject,
+    html: content
+  };
+
+  transporter.sendMail(mailOptions, function(err, info) {
+    if (err) console.error("Send mail error: ", err);
+    else console.log(info);
+  });
+}
+
+/**
  * Get daily report from pull request.
  * @param {*} pullRequests
  */
 function getDailyReport(pullRequests: any) {
+  if (!pullRequests) {
+    return;
+  }
+
   const items = types.map(type => ({ type, commits: [] }));
   for (const [i, pr] of pullRequests.entries()) {
     const { title, number } = pr;
@@ -102,23 +106,27 @@ function getDailyReport(pullRequests: any) {
 }
 
 async function getCommits() {
-  //TODO: add a url composer to handle diffference repo and different time span.
-  const resp = await axios.get(
-    "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=2018-6-9T00:00:00Z&until=2018-06-14T:00:00Z"
-  );
-  const prs = [];
-  for (const data of resp.data) {
-    const sha1 = data.sha;
-    console.log("sha1:", sha1);
-    await Util.sleep(200);
-    const prResp = await axios.get(
-      `https://api.github.com/search/issues?q=${sha1}`
+  try {
+    //TODO: add a url composer to handle diffference repo and different time span.
+    const resp = await axios.get(
+      "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=2018-8-9T00:00:00Z&until=2018-08-14T:00:00Z"
     );
-    for (const prData of prResp.data.items) {
-      prs.push(prData);
+    const prs = [];
+    for (const data of resp.data) {
+      const sha1 = data.sha;
+      console.log("sha1:", sha1);
+      await Util.sleep(200);
+      const prResp = await axios.get(
+        `https://api.github.com/search/issues?q=${sha1}`
+      );
+      for (const prData of prResp.data.items) {
+        prs.push(prData);
+      }
     }
+    return prs;
+  } catch (err) {
+    console.error("Request commits error: ", err);
   }
-  return prs;
 }
 
 async function start() {

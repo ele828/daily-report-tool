@@ -1,4 +1,4 @@
-export default {
+export let config = {
   email: {
     account: "integration.sentry@gmail.com",
     password: "Test!123",
