@@ -1,7 +1,10 @@
 import axios from "axios";
 import * as nodemailer from "nodemailer";
+import { pathOr } from "ramda";
 import { config } from "./config";
+import { env } from "./env";
 import * as Util from "./util";
+import { PassThrough } from "stream";
 
 const BREAKING_CHANGE = "breaking_change";
 const NEW_FEATURE = "new_feature";
@@ -52,8 +55,10 @@ function getSubTitle(type: string) {
 function sendEmail(content: string) {
   if (!content) return;
 
-  const account = config && config.email ? config.email.account : "";
-  const password = config && config.email ? config.email.password : "";
+  const account = pathOr(undefined, ["email", "account"], env);
+  const password = pathOr(undefined, ["email", "password"], env);
+  const to = pathOr(undefined, ["email", "to"], env);
+  const subject = pathOr(undefined, ["report", "subject"], config);
 
   var transporter = nodemailer.createTransport({
     service: "gmail",
@@ -64,9 +69,9 @@ function sendEmail(content: string) {
   });
 
   const mailOptions = {
-    from: config.email.account,
-    to: config.email.to,
-    subject: config.report.subject,
+    from: account,
+    to: to,
+    subject: subject,
     html: content
   };
 
