@@ -12,11 +12,13 @@
   "dependencies": {
     "axios": "^0.18.0",
     "gmail-send": "^1.2.14",
+    "moment": "^2.22.2",
     "nodemailer": "^4.6.6",
     "ramda": "^0.25.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
+    "@types/moment": "^2.13.0",
     "@types/nodemailer": "^4.6.2",
     "@types/ramda": "^0.25.36",
     "jest": "^23.5.0",
