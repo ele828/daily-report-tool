@@ -96,7 +96,7 @@ function getDailyReport(pullRequests: any) {
     const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
     items[i % items.length].commits.push(tpl);
   }
-  const tpl = ["** Commits daily report on 06/12/2018 Tuesday **"];
+  const tpl = [`** Commits daily report on ${Util.getCurrentDate()} Tuesday **`];
   for (const item of items) {
     const typeTpl = getSubTitle(item.type);
     tpl.push("");
