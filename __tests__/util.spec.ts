@@ -1,12 +1,16 @@
 import * as Util from "../src/util";
 
-describe("example test", async () => {
-  test("test", () => {
-    expect(2).toEqual(1 + 1);
+describe("Test util methods", async () => {
+  test("Date string with formatter YYYY-MM-DDTHH:MM:SSSZ", () => {
+    let dateString = Util.getCurrentDate(
+      "20130208T080910",
+      "YYYY-MM-DDTHH:MM:SSZ"
+    );
+    expect(dateString).toBe("2013-02-08T08:09:10Z");
   });
 
-  test("Current date string", () => {
-    let currentDate = Util.getCurrentDate();
-    expect(currentDate.length).toBe(10);
+  test("Date string with formatter YYYY-MM-DD", () => {
+    let dateString = Util.getCurrentDate("20130208T080910");
+    expect(dateString).toBe("2013-02-08");
   });
 });

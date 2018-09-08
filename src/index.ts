@@ -6,6 +6,13 @@ import { env } from "./env";
 import * as Util from "./util";
 import { PassThrough } from "stream";
 
+/**
+ * TODO:
+ * 1. get categories from a config server
+ * 2. define types of ts
+ * 3. later, support graphQL
+ */
+
 const BREAKING_CHANGE = "breaking_change";
 const NEW_FEATURE = "new_feature";
 const UI_CHANGE = "ui_change";
@@ -17,7 +24,7 @@ const OTHER = "other";
 const types = [
   BREAKING_CHANGE,
   NEW_FEATURE,
-  UI_CHANGE,
+  // UI_CHANGE,
   BUGFIX,
   REFACTOR,
   TOOLING,
@@ -35,8 +42,8 @@ function getSubTitle(type: string) {
       return "** :skull_crossbones: Breaking Change **";
     case NEW_FEATURE:
       return "** :tada: New Feature **";
-    case UI_CHANGE:
-      return "** :boom: UI Change **";
+    // case UI_CHANGE:
+    //   return "** :boom: UI Change **";
     case BUGFIX:
       return "** :white_check_mark: Bugfix **";
     case REFACTOR:
@@ -85,18 +92,17 @@ function sendEmail(content: string) {
  * Get daily report from pull request.
  * @param {*} pullRequests
  */
-function getDailyReport(pullRequests: any) {
-  if (!pullRequests) {
+function getDailyReport(prList: any) {
+  if (!prList) {
     return;
   }
 
+  let plen = 0;
   const items = types.map(type => ({ type, commits: [] }));
-  for (const [i, pr] of pullRequests.entries()) {
-    const { title, number } = pr;
-    const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
-    items[i % items.length].commits.push(tpl);
-  }
-  const tpl = [`** Commits daily report on ${Util.getCurrentDate()} Tuesday **`];
+
+  parsePr(prList, items);
+  const tpl = [`** Commits daily report on ${Util.getCurrentDate()} **`];
+
   for (const item of items) {
     const typeTpl = getSubTitle(item.type);
     tpl.push("");
@@ -110,11 +116,34 @@ function getDailyReport(pullRequests: any) {
   return tpl.join("\n");
 }
 
+function parsePr(prList: any, items: any): any[] {
+  let plen = 0;
+  for (const pr of prList) {
+    const { title, number } = pr;
+    const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
+
+    if (title.startsWith("break ") || title.startsWith("break(") || title.startsWith("break")) {
+      items[0].commits.push(tpl);
+    } else if (title.startsWith("feat ") || title.startsWith("feat(") || title.startsWith("feat:")) {
+      items[1].commits.push(tpl);
+    } else if (title.startsWith("fix ") || title.startsWith("fix(") || title.startsWith("fix:")) {
+      items[2].commits.push(tpl);
+    } else if (title.startsWith("refactor ") || title.startsWith("refactor(") || title.startsWith("refactor:")) {
+      items[3].commits.push(tpl);
+    } else if (title.startsWith("chore ") || title.startsWith("chore(") || title.startsWith("chore:")) {
+      items[4].commits.push(tpl);
+    } else {
+      items[5].commits.push(tpl);
+    }
+  }
+  return items;
+}
+
 async function getCommits() {
   try {
     //TODO: add a url composer to handle diffference repo and different time span.
     const resp = await axios.get(
-      "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=2018-8-9T00:00:00Z&until=2018-08-14T:00:00Z"
+      "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=2013-08-31T00:02:00+00:00&until=2018-09-05T00:02:00+00:00"
     );
     const prs = [];
     for (const data of resp.data) {
@@ -134,9 +163,19 @@ async function getCommits() {
   }
 }
 
+async function getPullRequests() {
+  const reqs = await axios.get(
+    "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/pulls?state=closed"
+  );
+
+  console.log("===>", reqs);
+  return reqs && reqs.data;
+}
+
 async function start() {
-  const prs = await getCommits();
-  const report = await getDailyReport(prs);
+  // const prs = await getCommits();
+  const reqs = await getPullRequests();
+  const report = await getDailyReport(reqs);
   console.log("reports:", report);
   return sendEmail(report);
 }
