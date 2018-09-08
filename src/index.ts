@@ -6,6 +6,13 @@ import { env } from "./env";
 import * as Util from "./util";
 import { PassThrough } from "stream";
 
+/**
+ * TODO: 
+ * 1. get categories from a config server
+ * 2. define types of ts
+ * 3. later, support graphQL
+ */
+
 const BREAKING_CHANGE = "breaking_change";
 const NEW_FEATURE = "new_feature";
 const UI_CHANGE = "ui_change";
@@ -85,20 +92,19 @@ function sendEmail(content: string) {
  * Get daily report from pull request.
  * @param {*} pullRequests
  */
-function getDailyReport(pullRequests: any) {
-  if (!pullRequests) {
+function getDailyReport(prList: any) {
+  if (!prList) {
     return;
   }
 
+  let plen = 0; 
   const items = types.map(type => ({ type, commits: [] }));
-  for (const [i, pr] of pullRequests.entries()) {
-    const { title, number } = pr;
-    const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
-    items[i % items.length].commits.push(tpl);
-  }
+
+  parsePr(prList, items)
   const tpl = [
-    `** Commits daily report on ${Util.getCurrentDate()} Tuesday **`
+    `** Commits daily report on ${Util.getCurrentDate()} **`
   ];
+
   for (const item of items) {
     const typeTpl = getSubTitle(item.type);
     tpl.push("");
@@ -110,6 +116,18 @@ function getDailyReport(pullRequests: any) {
     }
   }
   return tpl.join("\n");
+}
+
+function parsePr(prList:any, items:any):any[]{
+  let plen = 0;
+  for (const pr of prList) {
+    const { title, number } = pr;
+    const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
+
+    if(title.includes("feat ") || title.includes("feat:"))
+    items[plen++ % items.length].commits.push(tpl);
+  }
+  return items;
 }
 
 async function getCommits() {
