@@ -122,15 +122,15 @@ function parsePr(prList: any, items: any): any[] {
     const { title, number } = pr;
     const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
 
-    if (title.includes("break ") || title.includes("break(")) {
+    if (title.startsWith("break ") || title.startsWith("break(") || title.startsWith("break")) {
       items[0].commits.push(tpl);
-    } else if (title.includes("feat ") || title.includes("feat(")) {
+    } else if (title.startsWith("feat ") || title.startsWith("feat(") || title.startsWith("feat:")) {
       items[1].commits.push(tpl);
-    } else if (title.includes("fix ") || title.includes("fix(")) {
+    } else if (title.startsWith("fix ") || title.startsWith("fix(") || title.startsWith("fix:")) {
       items[2].commits.push(tpl);
-    } else if (title.includes("refactor ") || title.includes("refactor(")) {
+    } else if (title.startsWith("refactor ") || title.startsWith("refactor(") || title.startsWith("refactor:")) {
       items[3].commits.push(tpl);
-    } else if (title.includes("chore ") || title.includes("chore(")) {
+    } else if (title.startsWith("chore ") || title.startsWith("chore(") || title.startsWith("chore:")) {
       items[4].commits.push(tpl);
     } else {
       items[5].commits.push(tpl);
