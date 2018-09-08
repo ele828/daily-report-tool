@@ -96,7 +96,9 @@ function getDailyReport(pullRequests: any) {
     const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
     items[i % items.length].commits.push(tpl);
   }
-  const tpl = [`** Commits daily report on ${Util.getCurrentDate()} Tuesday **`];
+  const tpl = [
+    `** Commits daily report on ${Util.getCurrentDate()} Tuesday **`
+  ];
   for (const item of items) {
     const typeTpl = getSubTitle(item.type);
     tpl.push("");
@@ -114,7 +116,7 @@ async function getCommits() {
   try {
     //TODO: add a url composer to handle diffference repo and different time span.
     const resp = await axios.get(
-      "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=2018-8-9T00:00:00Z&until=2018-08-14T:00:00Z"
+      "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=2013-08-31T00:02:00+00:00&until=2018-09-05T00:02:00+00:00"
     );
     const prs = [];
     for (const data of resp.data) {
@@ -134,9 +136,19 @@ async function getCommits() {
   }
 }
 
+async function getPullRequests() {
+  const reqs = await axios.get(
+    "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/pulls?state=closed"
+  );
+
+  console.log("===>", reqs);
+  return reqs && reqs.data;
+}
+
 async function start() {
-  const prs = await getCommits();
-  const report = await getDailyReport(prs);
+  // const prs = await getCommits();
+  const reqs = await getPullRequests();
+  const report = await getDailyReport(reqs);
   console.log("reports:", report);
   return sendEmail(report);
 }
