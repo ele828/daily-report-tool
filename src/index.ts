@@ -7,7 +7,7 @@ import * as Util from "./util";
 import { PassThrough } from "stream";
 
 /**
- * TODO: 
+ * TODO:
  * 1. get categories from a config server
  * 2. define types of ts
  * 3. later, support graphQL
@@ -24,7 +24,7 @@ const OTHER = "other";
 const types = [
   BREAKING_CHANGE,
   NEW_FEATURE,
-  UI_CHANGE,
+  // UI_CHANGE,
   BUGFIX,
   REFACTOR,
   TOOLING,
@@ -42,8 +42,8 @@ function getSubTitle(type: string) {
       return "** :skull_crossbones: Breaking Change **";
     case NEW_FEATURE:
       return "** :tada: New Feature **";
-    case UI_CHANGE:
-      return "** :boom: UI Change **";
+    // case UI_CHANGE:
+    //   return "** :boom: UI Change **";
     case BUGFIX:
       return "** :white_check_mark: Bugfix **";
     case REFACTOR:
@@ -97,13 +97,11 @@ function getDailyReport(prList: any) {
     return;
   }
 
-  let plen = 0; 
+  let plen = 0;
   const items = types.map(type => ({ type, commits: [] }));
 
-  parsePr(prList, items)
-  const tpl = [
-    `** Commits daily report on ${Util.getCurrentDate()} **`
-  ];
+  parsePr(prList, items);
+  const tpl = [`** Commits daily report on ${Util.getCurrentDate()} **`];
 
   for (const item of items) {
     const typeTpl = getSubTitle(item.type);
@@ -118,14 +116,25 @@ function getDailyReport(prList: any) {
   return tpl.join("\n");
 }
 
-function parsePr(prList:any, items:any):any[]{
+function parsePr(prList: any, items: any): any[] {
   let plen = 0;
   for (const pr of prList) {
     const { title, number } = pr;
     const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
 
-    if(title.includes("feat ") || title.includes("feat:"))
-    items[plen++ % items.length].commits.push(tpl);
+    if (title.includes("break ") || title.includes("break(")) {
+      items[0].commits.push(tpl);
+    } else if (title.includes("feat ") || title.includes("feat(")) {
+      items[1].commits.push(tpl);
+    } else if (title.includes("fix ") || title.includes("fix(")) {
+      items[2].commits.push(tpl);
+    } else if (title.includes("refactor ") || title.includes("refactor(")) {
+      items[3].commits.push(tpl);
+    } else if (title.includes("chore ") || title.includes("chore(")) {
+      items[4].commits.push(tpl);
+    } else {
+      items[5].commits.push(tpl);
+    }
   }
   return items;
 }
