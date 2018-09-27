@@ -148,7 +148,7 @@ function parsePr(prList: any, items: any): any[] {
 async function getCommits() {
   try {
     //TODO: add a url composer to handle diffference repo and different time span.
-    const startTime = new Date(Date.now() - 24*60*60*1000).toISOString();
+    const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const endTime = new Date().toISOString();
     const resp = await axios.get(
       `https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=${startTime}&until=${endTime}`
@@ -175,7 +175,7 @@ async function getCommits() {
 
 async function getPullRequests() {
   const reqs = await axios.get(
-    "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/pulls?state=closed?base=master?sort="
+    "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/pulls?state=closed"
   );
 
   console.log("===>", reqs);
