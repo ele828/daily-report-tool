@@ -24,11 +24,11 @@ const OTHER = "other";
 const types = [
   BREAKING_CHANGE,
   NEW_FEATURE,
-  // UI_CHANGE,
+  UI_CHANGE,
   BUGFIX,
   REFACTOR,
   TOOLING,
-  OTHER
+  OTHER,
 ];
 
 // TODO: Parse pull request type
@@ -42,8 +42,8 @@ function getSubTitle(type: string) {
       return "** :skull_crossbones: Breaking Change **";
     case NEW_FEATURE:
       return "** :tada: New Feature **";
-    // case UI_CHANGE:
-    //   return "** :boom: UI Change **";
+    case UI_CHANGE:
+      return "** :boom: UI Change **";
     case BUGFIX:
       return "** :white_check_mark: Bugfix **";
     case REFACTOR:
@@ -106,8 +106,8 @@ function getDailyReport(prList: any) {
   for (const item of items) {
     const typeTpl = getSubTitle(item.type);
     tpl.push("");
+    tpl.push(typeTpl);
     if (item.commits.length > 0) {
-      tpl.push(typeTpl);
       for (const commit of item.commits) {
         tpl.push(commit);
       }
@@ -119,12 +119,16 @@ function getDailyReport(prList: any) {
 function parsePr(prList: any, items: any): any[] {
   let plen = 0;
   for (const pr of prList) {
-    const { title, number } = pr;
+    const { title, number, body } = pr;
     const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
 
-    if (title.startsWith("break ") || title.startsWith("break(") || title.startsWith("break")) {
-      items[0].commits.push(tpl);
-    } else if (title.startsWith("feat ") || title.startsWith("feat(") || title.startsWith("feat:")) {
+    if (body.startsWith("BREAKING CHANGE ") || body.startsWith("BREAKING CHANGE(") || body.startsWith("BREAKING CHANGE:")) {
+      const breakingChangeTpl = `* ${body}`;
+      items[0].commits.push(breakingChangeTpl);
+      items[0].commits.push(`* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`);
+      items[0].commits.push('\n');
+    }
+    if (title.startsWith("feat ") || title.startsWith("feat(") || title.startsWith("feat:")) {
       items[1].commits.push(tpl);
     } else if (title.startsWith("fix ") || title.startsWith("fix(") || title.startsWith("fix:")) {
       items[2].commits.push(tpl);
@@ -132,8 +136,10 @@ function parsePr(prList: any, items: any): any[] {
       items[3].commits.push(tpl);
     } else if (title.startsWith("chore ") || title.startsWith("chore(") || title.startsWith("chore:")) {
       items[4].commits.push(tpl);
-    } else {
+    } else if (title.startsWith("UI ") || title.startsWith("UI(") || title.startsWith("UI:")) {
       items[5].commits.push(tpl);
+    } else {
+      items[6].commits.push(tpl);
     }
   }
   return items;
@@ -142,14 +148,18 @@ function parsePr(prList: any, items: any): any[] {
 async function getCommits() {
   try {
     //TODO: add a url composer to handle diffference repo and different time span.
+    const startTime = new Date(Date.now() - 24*60*60*1000).toISOString();
+    const endTime = new Date().toISOString();
     const resp = await axios.get(
-      "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=2013-08-31T00:02:00+00:00&until=2018-09-05T00:02:00+00:00"
+      `https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=${startTime}&until=${endTime}`
     );
     const prs = [];
     for (const data of resp.data) {
       const sha1 = data.sha;
       console.log("sha1:", sha1);
-      await Util.sleep(200);
+      // since the rate limit of search API only allows us to make up to 10 requests per minute. 
+      // so we sleep for 6 seconds to limit the requests
+      await Util.sleep(6000);
       const prResp = await axios.get(
         `https://api.github.com/search/issues?q=${sha1}`
       );
@@ -165,7 +175,7 @@ async function getCommits() {
 
 async function getPullRequests() {
   const reqs = await axios.get(
-    "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/pulls?state=closed"
+    "https://api.github.com/repos/ringcentral/ringcentral-js-widgets/pulls?state=closed?base=master?sort="
   );
 
   console.log("===>", reqs);
@@ -173,9 +183,9 @@ async function getPullRequests() {
 }
 
 async function start() {
-  // const prs = await getCommits();
-  const reqs = await getPullRequests();
-  const report = await getDailyReport(reqs);
+  const prs = await getCommits();
+  // const reqs = await getPullRequests();
+  const report = await getDailyReport(prs);
   console.log("reports:", report);
   return sendEmail(report);
 }
