@@ -1,6 +1,6 @@
 import moment from "moment";
 
-const DEFAULT_DATE_FORMAT = "YYYY-MM-DD";
+const DEFAULT_DATE_FORMAT = "YYYY-MM-DD dddd";
 export function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
