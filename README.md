@@ -17,9 +17,11 @@ export let env = {
 ```
 
 ## Install & deploy
-1. install [typescript]
-2. install nodemon
-3. install ts-node for development
+Before continue, you have to install `yarn` first by *Homebrew* or other [ways](https://yarnpkg.com/lang/en/docs/install/#mac-stable).
+
+1. install [typescript], `yarn global add typescript`.
+2. install nodemon, `yarn global add nodemon`.
+3. install ts-node for development.
 
 Run `npm run build` to buld, run `npm run dev` for development, and run `npm run prod` to build and run this project in server.
 
