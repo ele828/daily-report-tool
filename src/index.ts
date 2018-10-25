@@ -157,14 +157,18 @@ async function getCommits() {
     for (const data of resp.data) {
       const sha1 = data.sha;
       console.log("sha1:", sha1);
-      // since the rate limit of search API only allows us to make up to 10 requests per minute. 
+      // Since the rate limit of search API only allows us to make up to 10 requests per minute,
       // so we sleep for 6 seconds to limit the requests
       await Util.sleep(6000);
-      const prResp = await axios.get(
-        `https://api.github.com/search/issues?q=${sha1}`
-      );
-      for (const prData of prResp.data.items) {
-        prs.push(prData);
+      try{
+        const prResp = await axios.get(
+          `https://api.github.com/search/issues?q=${sha1}`
+        );
+        for (const prData of prResp.data.items) {
+          prs.push(prData);
+        }
+      } catch(err) {
+        continue;
       }
     }
     return prs;
