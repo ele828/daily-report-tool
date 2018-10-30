@@ -24,10 +24,10 @@ const OTHER = "other";
 const types = [
   BREAKING_CHANGE,
   NEW_FEATURE,
-  UI_CHANGE,
   BUGFIX,
   REFACTOR,
   TOOLING,
+  UI_CHANGE,
   OTHER,
 ];
 
@@ -42,14 +42,14 @@ function getSubTitle(type: string) {
       return "** :skull_crossbones: Breaking Change **";
     case NEW_FEATURE:
       return "** :tada: New Feature **";
-    case UI_CHANGE:
-      return "** :boom: UI Change **";
     case BUGFIX:
       return "** :white_check_mark: Bugfix **";
     case REFACTOR:
       return "** :first_place: Refactor **";
     case TOOLING:
       return "** :atom: Tooling **";
+    case UI_CHANGE:
+      return "** :boom: UI Change **";
     case OTHER:
       return "** :triangular_flag_on_post: Other **";
   }
