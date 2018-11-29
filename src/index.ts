@@ -169,7 +169,12 @@ async function getCommits() {
       try{
         const prResp = await axios.get(
           `https://api.github.com/search/issues?q=${sha1}`
-        );
+        , {
+          auth: {
+            username: account.username,
+            password: account.password
+          }
+        });
         for (const prData of prResp.data.items) {
           prs.push(prData);
         }
