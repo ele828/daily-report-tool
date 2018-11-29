@@ -121,7 +121,7 @@ function parsePr(prList: any, items: any): any[] {
   let plen = 0;
   for (const pr of prList) {
     const { title, number, body } = pr;
-    const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
+    const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/integration-apps/pull/${number}))`;
 
     if (body.startsWith("BREAKING CHANGE ") || body.startsWith("BREAKING CHANGE(") || body.startsWith("BREAKING CHANGE:")) {
       const breakingChangeTpl = `* ${body}`;
