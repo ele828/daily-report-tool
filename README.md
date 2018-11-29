@@ -16,6 +16,17 @@ export let env = {
 };
 ```
 
+## Config your account
+
+You can configure github account like this.
+
+```ts
+export let account = {
+  username: "Your github username",
+  password: 'Your github password'
+};
+```
+
 ## Install & deploy
 Before continue, you have to install `yarn` first by *Homebrew* or other [ways](https://yarnpkg.com/lang/en/docs/install/#mac-stable).
 
