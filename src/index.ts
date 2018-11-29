@@ -5,6 +5,7 @@ import { config } from "./config";
 import { env } from "./env";
 import * as Util from "./util";
 import { PassThrough } from "stream";
+import account from './account.js';
 
 /**
  * TODO:
@@ -120,7 +121,7 @@ function parsePr(prList: any, items: any): any[] {
   let plen = 0;
   for (const pr of prList) {
     const { title, number, body } = pr;
-    const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/ringcentral-js-widgets/pull/${number}))`;
+    const tpl = `* ${title} ([#${number}](https://github.com/ringcentral/integration-apps/pull/${number}))`;
 
     if (body.startsWith("BREAKING CHANGE ") || body.startsWith("BREAKING CHANGE(") || body.startsWith("BREAKING CHANGE:")) {
       const breakingChangeTpl = `* ${body}`;
@@ -151,8 +152,13 @@ async function getCommits() {
     const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const endTime = new Date().toISOString();
     const resp = await axios.get(
-      `https://api.github.com/repos/ringcentral/ringcentral-js-widgets/commits?since=${startTime}&until=${endTime}`
-    );
+      `https://api.github.com/repos/ringcentral/integration-apps/commits?since=${startTime}&until=${endTime}`
+    , {
+      auth: {
+        username: account.username,
+        password: account.password
+      }
+    });
     const prs = [];
     for (const data of resp.data) {
       const sha1 = data.sha;
@@ -163,7 +169,12 @@ async function getCommits() {
       try{
         const prResp = await axios.get(
           `https://api.github.com/search/issues?q=${sha1}`
-        );
+        , {
+          auth: {
+            username: account.username,
+            password: account.password
+          }
+        });
         for (const prData of prResp.data.items) {
           prs.push(prData);
         }

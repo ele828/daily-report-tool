@@ -1,3 +1,4 @@
 src/env.ts
+src/account.ts
 node_modules/
 dist/
