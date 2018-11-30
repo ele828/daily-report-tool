@@ -5,7 +5,7 @@ import { config } from "./config";
 import { env } from "./env";
 import * as Util from "./util";
 import { PassThrough } from "stream";
-import account from './account.js';
+import account from './account';
 
 /**
  * TODO:
